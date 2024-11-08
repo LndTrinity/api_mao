@@ -102,3 +102,26 @@ export const deleteServico = async (req: Request, res: Response) => {
       .json({error: "Erro ao excluir serviço. Tente novamente mais tarde."});
   }
 };
+
+export const searchServicosByName = async (req: Request, res: Response) => {
+  const { nome } = req.query;
+
+  if (!nome) {
+    return res.status(400).json({ error: "O parâmetro 'nome' é obrigatório." });
+  }
+
+  try {
+    const servicos = await prisma.servico.findMany({
+      where: {
+        nome: {
+          contains: nome as string,
+          mode: 'insensitive',
+        },
+      },
+    });
+    res.status(200).json(servicos);
+  } catch (error: unknown) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao buscar serviços. Tente novamente mais tarde." });
+  }
+};
