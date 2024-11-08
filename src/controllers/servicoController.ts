@@ -28,14 +28,26 @@ export const createServico = async (req: Request, res: Response) => {
 };
 
 export const getAllServicos = async (req: Request, res: Response) => {
+  const { nome } = req.query;
+
   try {
-    const servicos = await prisma.servico.findMany();
+    let servicos;
+    if (nome) {
+      servicos = await prisma.servico.findMany({
+        where: {
+          nome: {
+            contains: nome as string,
+            mode: 'insensitive', // Faz a busca ser case-insensitive
+          },
+        },
+      });
+    } else {
+      servicos = await prisma.servico.findMany();
+    }
     res.status(200).json(servicos);
   } catch (error: unknown) {
     console.error(error);
-    res
-      .status(500)
-      .json({error: "Erro ao buscar serviços. Tente novamente mais tarde."});
+    res.status(500).json({ error: "Erro ao buscar serviços. Tente novamente mais tarde." });
   }
 };
 
@@ -103,25 +115,25 @@ export const deleteServico = async (req: Request, res: Response) => {
   }
 };
 
-export const searchServicosByName = async (req: Request, res: Response) => {
-  const { nome } = req.query;
+// export const searchServicosByName = async (req: Request, res: Response) => {
+//   const { nome } = req.query;
 
-  if (!nome) {
-    return res.status(400).json({ error: "O parâmetro 'nome' é obrigatório." });
-  }
+//   if (!nome) {
+//     return res.status(400).json({ error: "O parâmetro 'nome' é obrigatório." });
+//   }
 
-  try {
-    const servicos = await prisma.servico.findMany({
-      where: {
-        nome: {
-          contains: nome as string,
-          mode: 'insensitive',
-        },
-      },
-    });
-    res.status(200).json(servicos);
-  } catch (error: unknown) {
-    console.error(error);
-    res.status(500).json({ error: "Erro ao buscar serviços. Tente novamente mais tarde." });
-  }
-};
+//   try {
+//     const servicos = await prisma.servico.findMany({
+//       where: {
+//         nome: {
+//           contains: nome as string,
+//           mode: 'insensitive',
+//         },
+//       },
+//     });
+//     res.status(200).json(servicos);
+//   } catch (error: unknown) {
+//     console.error(error);
+//     res.status(500).json({ error: "Erro ao buscar serviços. Tente novamente mais tarde." });
+//   }
+// };
