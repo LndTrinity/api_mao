@@ -52,9 +52,9 @@ export const getDadosUsuario = async (req: Request, res: Response) => {
     const usuarios = await prisma.usuario.findUnique(
       { where: { email } }
     );
-    const dados_a_enviar = {id: usuarios?.id, email: usuarios?.email, nome: usuarios?.nome}
     
-    res.json(dados_a_enviar);
+    
+    res.json(usuarios);
   } catch (error) {
 
     res.status(400).json(error);
