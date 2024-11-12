@@ -43,6 +43,24 @@ export const getAllUsuarios = async (req: Request, res: Response) => {
   }
 };
 
+export const getDadosUsuario = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body
+    if (!email) {
+      return res.status(401).json({ error: "Dados inválidos." });
+    }
+    const usuarios = await prisma.usuario.findUnique(
+      { where: { email } }
+    );
+    const dados_a_enviar = {id: usuarios?.id, email: usuarios?.email, nome: usuarios?.nome}
+    
+    res.json(dados_a_enviar);
+  } catch (error) {
+
+    res.status(400).json(error);
+  }
+}
+
 export const getUsuario = async (req: Request, res: Response) => {
   try {
     const {id} = req.params;
